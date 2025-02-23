@@ -19,6 +19,7 @@ public class AdminController {
   // Управление пользователями
   @PostMapping("/parents")
   public ResponseEntity<ParentDTO> createParent(@RequestBody ParentDTO parentDTO) {
+    System.out.println("parentDTO: " + parentDTO);
     return ResponseEntity.ok(adminService.createParent(parentDTO));
   }
 

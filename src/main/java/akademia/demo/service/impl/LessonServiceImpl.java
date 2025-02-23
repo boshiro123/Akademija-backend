@@ -75,7 +75,7 @@ public class LessonServiceImpl implements LessonService {
 
   @Override
   public List<LessonDTO> getLessonsByDateRange(LocalDateTime start, LocalDateTime end) {
-    return lessonRepository.findByTeacherIdAndStartTimeBetween(null, start, end)
+    return lessonRepository.findLessonsByStartTimeBetween(start, end)
         .stream()
         .map(lessonMapper::toDto)
         .collect(Collectors.toList());

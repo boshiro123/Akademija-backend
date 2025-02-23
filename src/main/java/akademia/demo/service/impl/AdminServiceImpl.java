@@ -23,6 +23,7 @@ public class AdminServiceImpl implements AdminService {
   private final ParentMapper parentMapper;
   private final TeacherMapper teacherMapper;
   private final LessonMapper lessonMapper;
+  private final ChildMapper childMapper;
 
   @Override
   @Transactional
@@ -30,7 +31,22 @@ public class AdminServiceImpl implements AdminService {
     if (parentRepository.existsByEmail(parentDTO.getEmail())) {
       throw new RuntimeException("Email already exists");
     }
+
     Parent parent = parentMapper.toEntity(parentDTO);
+    parent.setPassword(parentDTO.getPassword());
+
+    // Обработка списка детей, если они есть
+    if (parentDTO.getChildren() != null && !parentDTO.getChildren().isEmpty()) {
+      List<Child> children = parentDTO.getChildren().stream()
+          .map(childDTO -> {
+            Child child = childMapper.toEntity(childDTO);
+            child.setParent(parent);
+            return child;
+          })
+          .collect(Collectors.toList());
+      parent.setChildren(children);
+    }
+
     return parentMapper.toDto(parentRepository.save(parent));
   }
 
@@ -41,6 +57,7 @@ public class AdminServiceImpl implements AdminService {
       throw new RuntimeException("Email already exists");
     }
     Teacher teacher = teacherMapper.toEntity(teacherDTO);
+    teacher.setPassword(teacherDTO.getPassword());
     return teacherMapper.toDto(teacherRepository.save(teacher));
   }
 
@@ -77,7 +94,9 @@ public class AdminServiceImpl implements AdminService {
 
   @Override
   public List<LessonDTO> getLessonsByDateRange(LocalDateTime start, LocalDateTime end) {
-    return lessonRepository.findByTeacherIdAndStartTimeBetween(null, start, end).stream()
+    System.out.println("start: " + start);
+    System.out.println("end: " + end);
+    return lessonRepository.findLessonsByStartTimeBetween(start, end).stream()
         .map(lessonMapper::toDto)
         .collect(Collectors.toList());
   }
@@ -100,8 +119,8 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public List<LessonDTO> getUpcomingLessons() {
     LocalDateTime now = LocalDateTime.now();
-    return lessonRepository.findByTeacherIdAndStartTimeBetween(
-        null, now, now.plusDays(7)).stream()
+    return lessonRepository.findLessonsByStartTimeBetween(
+        now, now.plusDays(7)).stream()
         .map(lessonMapper::toDto)
         .collect(Collectors.toList());
   }

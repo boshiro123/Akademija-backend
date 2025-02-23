@@ -30,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
           .email(parent.getEmail())
           .firstName(parent.getFirstName())
           .lastName(parent.getLastName())
+          .password(parent.getPassword())
           .build();
     }
 
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
           .email(teacher.getEmail())
           .firstName(teacher.getFirstName())
           .lastName(teacher.getLastName())
+          .password(teacher.getPassword())
           .build();
     }
 
@@ -55,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
           .email("admin@admin.com")
           .firstName("Admin")
           .lastName("Admin")
+          .password("admin")
           .build();
     }
 
