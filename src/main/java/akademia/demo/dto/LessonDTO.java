@@ -11,5 +11,5 @@ public class LessonDTO {
   private LocalDateTime startTime;
   private int durationMinutes;
   private Long teacherId;
-  private List<Long> childrenIds;
+  private List<ChildDTO> children;
 }

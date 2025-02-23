@@ -16,12 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TeacherController {
   private final TeacherService teacherService;
-
-  @PostMapping("/register")
-  public ResponseEntity<TeacherDTO> registerTeacher(@RequestBody TeacherDTO teacherDTO) {
-    return ResponseEntity.ok(teacherService.registerTeacher(teacherDTO));
-  }
-
+  
   @GetMapping("/{id}")
   public ResponseEntity<TeacherDTO> getTeacherById(@PathVariable Long id) {
     return ResponseEntity.ok(teacherService.getTeacherById(id));

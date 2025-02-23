@@ -51,8 +51,8 @@ public class AdminController {
 
   @GetMapping("/lessons/by-date-range")
   public ResponseEntity<List<LessonDTO>> getLessonsByDateRange(
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+      @RequestParam LocalDateTime start,
+      @RequestParam LocalDateTime end) {
     return ResponseEntity.ok(adminService.getLessonsByDateRange(start, end));
   }
 
