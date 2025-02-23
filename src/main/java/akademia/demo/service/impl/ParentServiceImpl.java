@@ -118,5 +118,18 @@ public class ParentServiceImpl implements ParentService {
         .collect(Collectors.toList());
   }
 
+  @Override
+  @Transactional
+  public void removeChild(Long parentId, Long childId) {
+    Parent parent = parentRepository.findById(parentId)
+        .orElseThrow(() -> new RuntimeException("Parent not found"));
+
+    Child child = childRepository.findById(childId)
+        .orElseThrow(() -> new RuntimeException("Child not found"));
+
+    parent.getChildren().remove(child);
+    parentRepository.save(parent);
+  }
+
   // Остальные методы реализации
 }

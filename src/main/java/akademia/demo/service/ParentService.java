@@ -24,4 +24,6 @@ public interface ParentService {
 
   // Получение расписания занятий для всех детей родителя
   List<LessonDTO> getChildrenLessons(Long parentId);
+
+  void removeChild(Long parentId, Long childId);
 }
