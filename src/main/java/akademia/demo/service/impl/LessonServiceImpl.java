@@ -12,6 +12,8 @@ import akademia.demo.mapper.LessonMapper;
 import akademia.demo.mapper.ChildMapper;
 import akademia.demo.service.LessonService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LessonServiceImpl implements LessonService {
   private final LessonRepository lessonRepository;
   private final ChildRepository childRepository;
@@ -53,10 +56,33 @@ public class LessonServiceImpl implements LessonService {
   @Override
   @Transactional
   public LessonDTO createLesson(LessonDTO lessonDTO) {
+    // Проверяем доступность временного слота
+    if (!isTimeSlotAvailable(lessonDTO.getStartTime(),
+        lessonDTO.getDurationMinutes(),
+        lessonDTO.getTeacherId())) {
+      throw new RuntimeException("Выбранное время недоступно для учителя");
+    }
+
     // Преобразование DTO в сущность
     Lesson lesson = lessonMapper.toEntity(lessonDTO);
+
+    // Получаем и устанавливаем учителя
+    Teacher teacher = teacherRepository.findById(lessonDTO.getTeacherId())
+        .orElseThrow(() -> new RuntimeException("Учитель не найден"));
+    lesson.setTeacher(teacher);
+
+    // Обрабатываем список детей, если он есть
+    if (lessonDTO.getChildren() != null && !lessonDTO.getChildren().isEmpty()) {
+      List<Long> childrenIds = lessonDTO.getChildren().stream()
+          .map(ChildDTO::getId)
+          .collect(Collectors.toList());
+      List<Child> children = childRepository.findAllById(childrenIds);
+      lesson.setChildren(children);
+    }
+
     // Сохранение новой лекции
     Lesson savedLesson = lessonRepository.save(lesson);
+
     // Обратное преобразование в DTO и возврат результата
     return lessonMapper.toDto(savedLesson);
   }
