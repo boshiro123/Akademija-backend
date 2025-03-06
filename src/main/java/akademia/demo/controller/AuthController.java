@@ -17,4 +17,9 @@ public class AuthController {
   public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO request) {
     return ResponseEntity.ok(authService.authenticate(request));
   }
+
+  @GetMapping("/ping")
+  public ResponseEntity<String> ping() {
+    return ResponseEntity.ok("pong");
+  }
 }

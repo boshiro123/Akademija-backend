@@ -1,19 +1,19 @@
 version: "3.8"
 services:
-  # portal-service:
-  #   container_name: portal-service
-  #   build: .
-  #   ports:
-  #     - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
-  #   env_file: .env
-  #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:postgresql://db:${POSTGRESDB_DOCKER_PORT}/${POSTGRESDB_DATABASE}
-  #     SPRING_DATASOURCE_USERNAME: ${POSTGRESDB_USER}
-  #     SPRING_DATASOURCE_PASSWORD: ${POSTGRESDB_ROOT_PASSWORD}
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - b2b-network
+  service:
+    container_name: service
+    build: .
+    ports:
+      - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:${POSTGRESDB_DOCKER_PORT}/${POSTGRESDB_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRESDB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRESDB_ROOT_PASSWORD}
+    depends_on:
+      - postgres
+    networks:
+      - akademia-network
 
   postgres:
     container_name: db
@@ -30,12 +30,22 @@ services:
     ports:
       - ${POSTGRESDB_LOCAL_PORT}:${POSTGRESDB_DOCKER_PORT}
     restart: unless-stopped
-    # networks:
-    #   - b2b-network
+    networks:
+      - akademia-network
 
-# networks:
-#   b2b-network:
-#     external: true
+  pgadmin:
+    image: dpage/pgadmin4:6.14
+    ports:
+      - "5050:80"
+    networks:
+      - akademia-network
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+
+networks:
+  akademia-network:
+    driver: bridge
 
 volumes:
   postgres:
